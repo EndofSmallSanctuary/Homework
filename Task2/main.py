@@ -1,16 +1,16 @@
-# This is a sample Python script.
-
-# Press Shift+F10 to execute it or replace it with your code.
-# Press Double Shift to search everywhere for classes, files, tool windows, actions, and settings.
-
-
-def print_hi(name):
-    # Use a breakpoint in the code line below to debug your script.
-    print(f'Hi, {name}')  # Press Ctrl+8 to toggle the breakpoint.
+from flask import Flask
+from flask.globals import request
+app = Flask(__name__)
 
 
-# Press the green button in the gutter to run the script.
-if __name__ == '__main__':
-    print_hi('PyCharm')
+@app.route("/",methods=['GET', 'POST'])
+def request80():
+    if(request.method=="POST"):
+        print(request.get_json(True))
+        return "dogs"
+    elif(request.method=="GET"):
+        return "wolfves"
 
-# See PyCharm help at https://www.jetbrains.com/help/pycharm/
+
+if __name__=="__main__":
+    app.run("localhost",80)
