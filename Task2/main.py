@@ -2,7 +2,6 @@ from os import truncate
 from flask import Flask
 from threading import Thread
 from flask.globals import request
-from flask.scaffold import F
 app = Flask(__name__)
 
 
@@ -26,3 +25,4 @@ if __name__=="__main__":
    thread2 = Thread(target=initiateapp8080)
    thread1.start()
    thread2.start()
+   thread1.join()

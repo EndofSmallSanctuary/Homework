@@ -1,4 +1,4 @@
-#!/home/rogue/Документы/GitHub/EndofSmallSanctuary/Homework/Task2/venv/bin/python
+#!/home/rogue/Документы/GitHub/EndofSmallSanctuary/Homework/Task2/venv/bin/python3
 # -*- coding: utf-8 -*-
 import re
 import sys
