@@ -1,0 +1,21 @@
+---
+
+- hosts: homegroup
+  become: yes
+  gather_facts: no
+  pre_tasks:
+
+  - name: create user 
+    tags: always
+    user: 
+      name: gattaca2
+      group: root
+
+
+  - name: install updates
+    apt: 
+      upgrade: dist
+      state: latest
+      update_cache: yes
+    
+    

@@ -1,0 +1,43 @@
+---
+
+- hosts: homegroup
+  become: yes
+  gather_facts: no
+  tasks: 
+
+  - name: install updates
+    apt: 
+      upgrade: dist
+      state: latest
+      update_cache: yes
+    
+
+  - name: git & pip install
+    apt:
+      name: 
+        - git
+        - python3-pip
+        - python3-venv
+      state: latest
+      update_cache: yes
+
+  - git:
+      repo: "{{git_repo}}"
+      dest: "{{project_path}}"
+      update: no
+
+  # - name: enable enviroment
+  #   shell: 
+
+
+  - name: install flask
+    pip:
+      name: flask
+
+
+  - name: launch app
+    shell: cd "{{project_path}}/Task2" && sudo nohup python3 -u main.py > output.log &
+
+
+
+
