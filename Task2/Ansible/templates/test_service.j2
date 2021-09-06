@@ -1,0 +1,9 @@
+[Unit]
+Description= {{service_name}} Service
+
+[Service]
+ExecStart= nohup /usr/bin/python3 /usr/project/Task2/main.py &
+
+
+[Install]
+WantedBy= multi-user.target

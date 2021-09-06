@@ -1,8 +1,0 @@
-- hosts: homegroup
-  become: yes
-  gather_facts: no
-  tasks: 
-    - name: save 
-      shell: rm /lib/systemd/system/dummy.service
-
-

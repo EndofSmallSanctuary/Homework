@@ -1,0 +1,9 @@
+- hosts: homegroup
+  become: yes
+  gather_facts: no
+  tasks: 
+  
+  - name: generate service file from template 
+    template:
+      src: test_service.j2
+      dest: /usr/project/file.conf 

@@ -18,6 +18,7 @@
         - git
         - python3-pip
         - python3-venv
+        - ufw
       state: latest
       update_cache: yes
 
@@ -26,17 +27,37 @@
       dest: "{{project_path}}"
       update: no
 
-  # - name: enable enviroment
-  #   shell: 
-
 
   - name: install flask
     pip:
       name: flask
 
+  - name: limiting ports
+    ufw: 
+      policy: deny
 
-  - name: launch app
-    shell: cd "{{project_path}}/Task2" && sudo nohup python3 -u main.py > output.log &
+  - name: opening ports
+    ufw:
+      rule: allow
+      name: OpenSSH
+
+  - name: opening ports2
+    ufw:
+      rule: allow
+      name: WWW Full
+
+
+  - name: enable ufw
+    ufw: 
+      state: enabled      
+
+  - name: generate service file from template 
+    template:
+      src: test_service.j2
+      dest: /usr/project 
+
+  # - name: launch app
+  #   shell: cd "{{project_path}}/Task2" && sudo nohup python3 -u main.py > output.log &
 
 
 

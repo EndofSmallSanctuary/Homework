@@ -8,3 +8,4 @@ ansible_ssh_pass=zxcking
 ansible_sudo_pass=zxcking
 git_repo=https://github.com/EndofSmallSanctuary/Homework.git
 project_path=/usr/project
+service_name=Pussy
