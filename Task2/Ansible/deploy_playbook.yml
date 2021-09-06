@@ -51,10 +51,7 @@
     ufw: 
       state: enabled      
 
-  - name: generate service file from template 
-    template:
-      src: test_service.j2
-      dest: /usr/project 
+ 
 
   # - name: launch app
   #   shell: cd "{{project_path}}/Task2" && sudo nohup python3 -u main.py > output.log &

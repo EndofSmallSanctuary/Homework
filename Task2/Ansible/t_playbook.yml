@@ -6,4 +6,11 @@
   - name: generate service file from template 
     template:
       src: test_service.j2
-      dest: /usr/project/file.conf 
+      dest: /etc/systemd/system/test.service  
+
+  - name: prepare service 
+    systemd: 
+      name: test
+      daemon-reload: yes
+      enabled: yes
+
