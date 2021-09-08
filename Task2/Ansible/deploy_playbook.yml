@@ -5,43 +5,43 @@
   gather_facts: no
   tasks: 
 
-  - name: install updates
-    apt: 
-      upgrade: dist
-      state: latest
-      update_cache: yes
+  # - name: install updates
+  #   apt: 
+  #     upgrade: dist
+  #     state: latest
+  #     update_cache: yes
     
 
-  - name: git & pip install
-    apt:
-      name: 
-        - git
-        - python3-pip
-        - python3-venv
-        - ufw
-      state: latest
-      update_cache: yes
+  # - name: git & pip install
+  #   apt:
+  #     name: 
+  #       - git
+  #       - python3-pip
+  #       - python3-venv
+  #       - ufw
+  #     state: latest
+  #     update_cache: yes
 
-  - name: remove python < 3
-    apt:
-      name: python2.7-minimal
-      state: absent 
-      purge: yes    
+  # - name: remove python < 3
+  #   apt:
+  #     name: python2.7-minimal
+  #     state: absent 
+  #     purge: yes    
 
-  - git:
-      repo: "{{git_repo}}"
-      dest: "{{project_path}}"
-      update: no
+  # - git:
+  #     repo: "{{git_repo}}"
+  #     dest: "{{project_path}}"
+  #     update: no
 
 
-  - name: install pip packets
-    pip:
-      name: 
-        - flask
-        - emoji
-        - pyOpenSSL
+  # - name: install pip packets
+  #   pip:
+  #     name: 
+  #       - flask
+  #       - emoji
+  #       - pyOpenSSL
 
-      state: latest
+  #     state: latest
 
   # - name: limiting ports
   #   ufw: 
@@ -65,7 +65,12 @@
  
 
   - name: launch app
-    shell: cd "{{project_path}}/Task2" && sudo python3 main.py  &
+    shell: cd "{{project_path}}/Task2" && sudo nohup python3 main.py &
+    register: tmppython
+
+  - name: Get stdout or stderr from the output
+    debug:
+      var: tmppython.stdout
 
 
 

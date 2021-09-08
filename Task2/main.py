@@ -22,8 +22,8 @@ def fetchemoji():
              return None    
 
 
-@app.route('/', defaults={'path': ''})
-@app.route('/<path:path>')
+@app.route('/',methods=['GET','POST'], defaults={'path': ''})
+@app.route('/<path:path>',methods=['GET','POST'])
 def request80(path):
     if(request.method=="POST"):
         jsonrequest = request.get_json(True);
