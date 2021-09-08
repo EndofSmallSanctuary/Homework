@@ -1,6 +1,6 @@
 [homegroup]
 #put your server ip addr here
-192.168.1.122 
+192.168.0.108
 
 [homegroup:vars]
 ansible_user=rogue
