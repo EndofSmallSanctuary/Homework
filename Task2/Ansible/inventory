@@ -5,7 +5,7 @@
 
 [homegroup:vars]
 git_repo=https://github.com/EndofSmallSanctuary/Homework.git
-project_path=/usr/project
+project_path=/usr/flaskproject
 service_name=Pussy
 
 [all:vars]
