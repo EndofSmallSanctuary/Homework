@@ -22,6 +22,12 @@
       state: latest
       update_cache: yes
 
+  - name: remove python < 3
+    apt:
+      name: python2.7-minimal
+      state: absent 
+      purge: yes    
+
   - git:
       repo: "{{git_repo}}"
       dest: "{{project_path}}"
@@ -35,24 +41,26 @@
         - emoji
         - pyOpenSSL
 
-  - name: limiting ports
-    ufw: 
-      policy: deny
+      state: latest
 
-  - name: opening ports
-    ufw:
-      rule: allow
-      name: OpenSSH
+  # - name: limiting ports
+  #   ufw: 
+  #     policy: deny
 
-  - name: opening ports2
-    ufw:
-      rule: allow
-      name: WWW Full
+  # - name: opening ports
+  #   ufw:
+  #     rule: allow
+  #     name: OpenSSH
+
+  # - name: opening ports2
+  #   ufw:
+  #     rule: allow
+  #     name: WWW Full
 
 
-  - name: enable ufw
-    ufw: 
-      state: enabled      
+  # - name: enable ufw
+  #   ufw: 
+  #     state: enabled      
 
  
 

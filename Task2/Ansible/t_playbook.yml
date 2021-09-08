@@ -56,35 +56,41 @@
   #     line: "localhost {{ansible_hostname}}.localhost"
   #     state: present
 
-  - name: Generate an OpenSSL private key
-    openssl_privatekey:
-       path: "{{project_path}}/Task2/certificate/key.pem"
-       cipher: aes256
-       passphrase: ''
-       backup: yes
+  # - name: Generate an OpenSSL private key
+  #   openssl_privatekey:
+  #      path: "{{project_path}}/Task2/certificate/key.pem"
+  #      cipher: aes256
+  #      passphrase: ''
+  #      backup: yes
 
-  - name: Generate an OpenSSL Certificate Signing Request with Subject information
-    openssl_csr:
-        path: "{{project_path}}/Task2/certificate/csr.csr"
-        privatekey_path: "{{project_path}}/Task2/certificate/key.pem"
-        country_name: RU
-        organization_name: ruengine
-        email_address: rus@mail.com
-        common_name: fsd
+  # - name: Generate an OpenSSL Certificate Signing Request with Subject information
+  #   openssl_csr:
+  #       path: "{{project_path}}/Task2/certificate/csr.csr"
+  #       privatekey_path: "{{project_path}}/Task2/certificate/key.pem"
+  #       country_name: RU
+  #       organization_name: ruengine
+  #       email_address: rus@mail.com
+  #       common_name: fsd
 
-  - name: Generate a Self Signed OpenSSL certificate
-    openssl_certificate:
-        path: "{{project_path}}/Task2/certificate/cert.pem"
-        privatekey_path: "{{project_path}}/Task2/certificate/key.pem"
-        csr_path: "{{project_path}}/Task2/certificate/csr.csr"
-        provider: selfsigned
+  # - name: Generate a Self Signed OpenSSL certificate
+  #   openssl_certificate:
+  #       path: "{{project_path}}/Task2/certificate/cert.pem"
+  #       privatekey_path: "{{project_path}}/Task2/certificate/key.pem"
+  #       csr_path: "{{project_path}}/Task2/certificate/csr.csr"
+  #       provider: selfsigned
 
 
-  - name: removing csr
-    file:
-      path: "{{project_path}}/Task2/certificate/csr.csr"
-      state: absent
+  # - name: removing csr
+  #   file:
+  #     path: "{{project_path}}/Task2/certificate/csr.csr"
+  #     state: absent
         
+  - name: remove python < 3
+    apt:
+      name: python2.7-minimal
+      state: absent 
+      purge: yes
+
 
 
 
