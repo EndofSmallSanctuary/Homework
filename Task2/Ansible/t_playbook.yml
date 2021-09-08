@@ -1,22 +1,66 @@
 - hosts: homegroup
   become: yes
   gather_facts: yes
+  tasks: 
 
-  # vars: 
-  #   ssh_key_filename: Elvira_T
+  # - name: Set authorized key taken from file
+  #   authorized_key:
+  #     user: "{{ansible_user}}"
+  #     state: present
+  #     manage_dir: yes
+  #     key: "{{lookup('file','jay.pub')}}"
+  
+  # - name: generate service file from template 
+  #   template:
+  #     src: test_service.j2
+  #     dest: /etc/systemd/system/test.service  
 
-  # tasks: 
-  #   - name: Create a directory if it does not exist
-  #     file:
-  #       path: ~/.ssh
-  #       state: directory
+  # - name: prepare service 
+  #   systemd: 
+  #     name: test
+  #     daemon-reload: yes
+  #     enabled: yes
 
-  #   - name: generate SSH key "{{ssh_key_filename}}"
-  #     openssh_keypair:
-  #       path: "~/.ssh/{{ssh_key_filename}}"
-  #       type: rsa
-  #       size: 4096
-  #       state: present
-  #       force: no
+
+  # - replace:
+  #     path: '/etc/ssh/sshd_config'
+  #     after: 'PasswordAuthentication'
+  #     regexp: '^(.*)PasswordAuthentication(.*)$'
+  #     replace: ''
+
+  # - name: Disable root SSH login
+  #   lineinfile:
+  #     dest: /etc/ssh/sshd_config
+  #     regexp: "^PermitRootLogin"
+  #     line: "PermitRootLogin no"
+  #     state: present    
+
+  # - lineinfile:
+  #     path: '/etc/ssh/sshd_config'
+  #     regexp: '^(.*)PasswordAuthentication(.*)$'
+  #     line: 'PasswordAuthentication no'   
+
+  # - lineinfile:
+  #     path: '/etc/ssh/sshd_config'
+  #     regexp: '^(.*)PasswordAuthentication(.*)$'
+  #     line: 'PasswordAuthentication no'             
+
+  # - name: restarting service
+  #   service:
+  #     name: sshd
+  #     state: restarted
+
+    - name: Download archive from google drive
+      get_url:
+        url: "https://drive.google.com/uc?export=download&id={{ file_id }}"
+        dest: /file/destination/file.tgz
+        mode: u=r,g-r,o=r
+
+
+
+
+
+
+
 
 

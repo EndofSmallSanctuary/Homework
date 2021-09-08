@@ -1,88 +1,108 @@
----
+---  
+- hosts: localhost
+  become: yes
+  gather_facts: no
+  connection: local
+  vars: 
+    ssh_key_filename: elvira_t
+    ssh_passphrase: ''
+  tasks:
+    - name: generate SSH key "{{ssh_key_filename}}" localy!!
+      user:
+        name: "{{ansible_user}}"
+        generate_ssh_key: yes
+        ssh_key_type: rsa
+        ssh_key_bits: 4096
+        ssh_key_file: .ssh/{{ssh_key_filename}}
+        ssh_key_passphrase: "{{ssh_passphrase}}"
+        force: no
+
 
 - hosts: homegroup
   become: yes
   gather_facts: yes
   tasks:
 
-  # - name: install updates
-  #   apt: 
-  #     upgrade: dist
-  #     state: latest
-  #     update_cache: yes
+  - name: install updates
+    apt: 
+      upgrade: dist
+      state: latest
+      update_cache: yes
     
 
-  # - name: git & pip install
-  #   apt:
-  #     name: 
-  #       - git
-  #       - python3-pip
-  #       - python3-venv
-  #       - ufw
-  #     state: latest
-  #     update_cache: yes
+  - name: git & pip install
+    apt:
+      name: 
+        - git
+        - python3-pip
+        - python3-venv
+        - ufw
+      state: latest
+      update_cache: yes
 
-  # - name: remove python < 3
-  #   apt:
-  #     name: python2.7-minimal
-  #     state: absent 
-  #     purge: yes    
+  - name: remove python < 3
+    apt:
+      name: python2.7-minimal
+      state: absent 
+      purge: yes    
 
-  # - git:
-  #     repo: "{{git_repo}}"
-  #     dest: "{{project_path}}"
-  #     update: no
+  - git:
+      repo: "{{git_repo}}"
+      dest: "{{project_path}}"
+      update: no
 
   
 
-  # - name: install pip packets
-  #   pip:
-  #     name: 
-  #       - flask
-  #       - emoji
-  #       - pyOpenSSL
-  #     state: latest
+  - name: install pip packets
+    pip:
+      name: 
+        - flask
+        - emoji
+        - pyOpenSSL
+      state: latest
 
-  # - name: Set authorized key taken from file
-  #   authorized_key:
-  #     user: "{{ansible_user}}"
-  #     state: present
-  #     manage_dir: yes
-  #     key: "{{lookup('file','jay.pub')}}"
+
+
+  - name: Set authorized key taken from file
+    authorized_key:
+      user: "{{ansible_user}}"
+      state: present
+      manage_dir: yes
+      key: "{{lookup('file','.ssh/{{ssh_key_filename}}.pub')}}"
   
-  # - name: generate service file from template 
-  #   template:
-  #     src: test_service.j2
-  #     dest: /etc/systemd/system/test.service  
+  - name: generate service file from template 
+    template:
+      src: test_service.j2
+      dest: /etc/systemd/system/test.service  
 
-  # - name: prepare service 
-  #   systemd: 
-  #     name: test
-  #     daemon-reload: yes
-  #     enabled: yes
+  - name: prepare service 
+    systemd: 
+      name: test
+      daemon-reload: yes
+      enabled: yes
 
 
-  # - replace:
-  #     path: '/etc/ssh/sshd_config'
-  #     after: 'PasswordAuthentication'
-  #     regexp: '^(.*)PasswordAuthentication(.*)$'
-  #     replace: ''
+  - replace:
+      path: '/etc/ssh/sshd_config'
+      after: 'PasswordAuthentication'
+      regexp: '^(.*)PasswordAuthentication(.*)$'
+      replace: ''
 
-  # - name: Disable root SSH login
-  #   lineinfile:
-  #     dest: /etc/ssh/sshd_config
-  #     regexp: "^PermitRootLogin"
-  #     line: "PermitRootLogin no"
+  - name: Disable root SSH login
+    lineinfile:
+      dest: /etc/ssh/sshd_config
+      regexp: "^PermitRootLogin"
+      line: "PermitRootLogin no"
 
-  # - lineinfile:
-  #     path: '/etc/ssh/sshd_config'
-  #     regexp: '^(.*)PasswordAuthentication(.*)$'
-  #     line: 'PasswordAuthentication no'      
+  - lineinfile:
+      path: '/etc/ssh/sshd_config'
+      regexp: '^(.*)PasswordAuthentication(.*)$'
+      line: 'PasswordAuthentication no'      
 
-  # - name: restarting service
-  #   service:
-  #     name: sshd
-  #     state: restarted
+  - name: restarting service
+    service:
+      name: sshd
+      state: restarted
 
 
 
@@ -93,13 +113,14 @@
       line: "localhost {{ansible_hostname}}.localhost"
       state: present
 
-  # - name: rewrite hosts also on launching machine!!
-  #   delegate_to: localhost
-  #   lineinfile:
-  #     dest: /etc/hosts
-  #     insertbefore: BOF
-  #     line: ansible_default_ipv4.address
-  #     state: present
+  - name: rewrite hosts also on launching machine!!
+    delegate_to: localhost
+    connection: local
+    lineinfile:
+      dest: /etc/hosts
+      insertbefore: BOF
+      line: "{{ansible_default_ipv4.address}} localhost {{ansible_hostname}}.localhost"
+      state: present
 
 
 

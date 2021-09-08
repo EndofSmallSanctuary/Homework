@@ -1,11 +1,14 @@
+
 [homegroup]
 #put your server ip addr here
-192.168.0.108
+192.168.1.122
 
 [homegroup:vars]
-ansible_user=rogue
-ansible_ssh_pass=zxcking
-ansible_sudo_pass=zxcking
 git_repo=https://github.com/EndofSmallSanctuary/Homework.git
 project_path=/usr/project
 service_name=Pussy
+
+[all:vars]
+ansible_user=rogue
+ansible_ssh_pass=zxcking
+ansible_sudo_pass=zxcking
