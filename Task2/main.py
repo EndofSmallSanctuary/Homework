@@ -56,7 +56,6 @@ def request80(path):
         randomEmoji = fetchemoji();
         if randomEmoji is None:
             randomEmoji = ""
-        print(randomEmoji);
         if len(path) > 0:
             return render_template("home.html",value=path+' section',emoji=randomEmoji[1:])
         else:

@@ -64,8 +64,8 @@
 
  
 
-  # - name: launch app
-  #   shell: cd "{{project_path}}/Task2" && sudo python3 main.py  &
+  - name: launch app
+    shell: cd "{{project_path}}/Task2" && sudo python3 main.py  &
 
 
 
