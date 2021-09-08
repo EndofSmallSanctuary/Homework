@@ -28,29 +28,29 @@ def request80(path):
     if(request.method=="POST"):
         jsonrequest = request.get_json(True);
         if 'animal' not in jsonrequest:
-            print('animal not found in request')
-            return('animal not found in request')
+            print('animal not found in request'+'\n')
+            return('animal not found in request'+'\n')
         elif 'sound' not in jsonrequest:
-            print('sound not found in request')
-            return('sound not found in request')
+            print('sound not found in request'+'\n')
+            return('sound not found in request'+'\n')
         elif 'count' not in jsonrequest: 
-            print('count not found in request')
-            return('count not found in request')  
+            print('count not found in request'+'\n')
+            return('count not found in request'+'\n')  
         else:
             animal = jsonrequest['animal']
             sound = jsonrequest['sound']
             count = jsonrequest['count']
             if type(count) != int:
-                print("int count expected")
-                return("int count expected")
+                print("int count expected"+'\n')
+                return("int count expected"+'\n')
             else:
                 returnstring = ''
                 for x in range(count):
                     returnstring+=emoji.emojize(':'+animal+':') + animal + ' says ' + sound + '\n'
                     print(emoji.emojize(':'+animal+':')+animal + ' says ' + sound);
                 returnstring+='Made with ' + emoji.emojize(':kissing_face:') + ' by '+ myname;
-                print('Made with ' + myname);    
-                return returnstring;    
+                print('Made with ' + myname+'\n');    
+                return returnstring+'\n';    
     elif(request.method=="GET"):
 
         randomEmoji = fetchemoji();

@@ -28,10 +28,10 @@
   #     state: absent 
   #     purge: yes    
 
-  # - git:
-  #     repo: "{{git_repo}}"
-  #     dest: "{{project_path}}"
-  #     update: no
+  - git:
+      repo: "{{git_repo}}"
+      dest: "{{project_path}}"
+      update: no
 
 
   # - name: install pip packets
@@ -65,7 +65,7 @@
  
 
   - name: launch app
-    shell: cd "{{project_path}}/Task2" && sudo nohup python3 main.py &
+    shell: cd "{{project_path}}/Task2" && sudo nohup python3 -u main.py > flasklog.log &
     register: tmppython
 
   - name: Get stdout or stderr from the output
