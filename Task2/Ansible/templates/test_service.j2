@@ -2,7 +2,8 @@
 Description= {{service_name}} Service
 
 [Service]
-ExecStart= sudo /usr/bin/python3 /usr/project/Task2/main.py &
+WorkingDirectory = {{project_path}}/Task2
+ExecStart= sudo  /usr/bin/python3 main.py &
 
 
 [Install]

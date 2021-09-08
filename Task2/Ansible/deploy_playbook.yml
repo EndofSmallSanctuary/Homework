@@ -2,8 +2,8 @@
 
 - hosts: homegroup
   become: yes
-  gather_facts: no
-  tasks: 
+  gather_facts: yes
+  tasks:
 
   # - name: install updates
   #   apt: 
@@ -28,11 +28,12 @@
   #     state: absent 
   #     purge: yes    
 
-  - git:
-      repo: "{{git_repo}}"
-      dest: "{{project_path}}"
-      update: no
+  # - git:
+  #     repo: "{{git_repo}}"
+  #     dest: "{{project_path}}"
+  #     update: no
 
+  
 
   # - name: install pip packets
   #   pip:
@@ -40,8 +41,96 @@
   #       - flask
   #       - emoji
   #       - pyOpenSSL
-
   #     state: latest
+
+  # - name: Set authorized key taken from file
+  #   authorized_key:
+  #     user: "{{ansible_user}}"
+  #     state: present
+  #     manage_dir: yes
+  #     key: "{{lookup('file','jay.pub')}}"
+  
+  # - name: generate service file from template 
+  #   template:
+  #     src: test_service.j2
+  #     dest: /etc/systemd/system/test.service  
+
+  # - name: prepare service 
+  #   systemd: 
+  #     name: test
+  #     daemon-reload: yes
+  #     enabled: yes
+
+
+  # - replace:
+  #     path: '/etc/ssh/sshd_config'
+  #     after: 'PasswordAuthentication'
+  #     regexp: '^(.*)PasswordAuthentication(.*)$'
+  #     replace: ''
+
+  # - name: Disable root SSH login
+  #   lineinfile:
+  #     dest: /etc/ssh/sshd_config
+  #     regexp: "^PermitRootLogin"
+  #     line: "PermitRootLogin no"
+
+  # - lineinfile:
+  #     path: '/etc/ssh/sshd_config'
+  #     regexp: '^(.*)PasswordAuthentication(.*)$'
+  #     line: 'PasswordAuthentication no'      
+
+  # - name: restarting service
+  #   service:
+  #     name: sshd
+  #     state: restarted
+
+
+
+  - name: rewriting hosts
+    lineinfile:
+      dest: /etc/hosts
+      insertbefore: BOF
+      line: "localhost {{ansible_hostname}}.localhost"
+      state: present
+
+  # - name: rewrite hosts also on launching machine!!
+  #   delegate_to: localhost
+  #   lineinfile:
+  #     dest: /etc/hosts
+  #     insertbefore: BOF
+  #     line: ansible_default_ipv4.address
+  #     state: present
+
+
+
+  # - name: Generate an OpenSSL private key
+  #   openssl_privatekey:
+  #      path: "{{project_path}}/Task2/certificate/key.pem"
+  #      cipher: aes256
+  #      passphrase: ''
+  #      backup: yes
+
+  # - name: Generate an OpenSSL Certificate Signing Request with Subject information
+  #   openssl_csr:
+  #       path: "{{project_path}}/Task2/certificate/csr.csr"
+  #       privatekey_path: "{{project_path}}/Task2/certificate/key.pem"
+  #       country_name: RU
+  #       organization_name: ruengine
+  #       email_address: rus@mail.com
+  #       common_name: fsd
+
+  # - name: Generate a Self Signed OpenSSL certificate
+  #   openssl_certificate:
+  #       path: "{{project_path}}/Task2/certificate/cert.pem"
+  #       privatekey_path: "{{project_path}}/Task2/certificate/key.pem"
+  #       csr_path: "{{project_path}}/Task2/certificate/csr.csr"
+  #       provider: selfsigned
+
+
+  # - name: removing csr
+  #   file:
+  #     path: "{{project_path}}/Task2/certificate/csr.csr"
+  #     state: absent   
 
   # - name: limiting ports
   #   ufw: 
@@ -64,13 +153,13 @@
 
  
 
-  - name: launch app
-    shell: cd "{{project_path}}/Task2" && sudo nohup python3 -u main.py > flasklog.log &
-    register: tmppython
+  # - name: launch app
+  #   shell: cd "{{project_path}}/Task2" && sudo nohup python3 -u main.py > flasklog.log &
+  #   register: tmppython
 
-  - name: Get stdout or stderr from the output
-    debug:
-      var: tmppython.stdout
+  # - name: Get stdout or stderr from the output
+  #   debug:
+  #     var: tmppython.stdout
 
 
 
