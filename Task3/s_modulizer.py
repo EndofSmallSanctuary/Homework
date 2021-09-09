@@ -1,11 +1,11 @@
-import subprocess
+from Shell_provider import ShellProvider as mShell
 
 
 def initialRun():
     print("Do you like me to show you all avaliable connections list? [y/n]")
     person_choise = input();
     if(person_choise is 'y'):
-        subprocess.run(['netstat','-tunapl'])
+        mShell.executeNoHup(['netstat','-tunapl'])
         return prepareIPS(pidChoise())
     elif(person_choise is 'n'):
         return prepareIPS(pidChoise())
@@ -14,20 +14,23 @@ def initialRun():
 
 def pidChoise():
     print("Now it's up to you to choose: i'm familiar with either pid or procesname, so type any")
-    return input()
+    minput = input()
+    mShell.executeNoHup(['clear']);
+    return minput
 
 
 def prepareIPS(obj):
     command = "netstat -tunapl | awk '/"+obj+"/ {print $5}' "
-    ret = subprocess.run(command, stdout=subprocess.PIPE, stderr=subprocess.DEVNULL, shell=True).stdout.decode('utf-8')
+    ret = mShell.execute(command)
     ret = ret[:-1].split('\n');
     setUPTheLadder(ret)
+
+
 
 def setUPTheLadder(ret):
     #cut -d: -f1
     for idx,ip_port in enumerate(ret):
         ret[idx] = ret[idx].split(':')[0]
-        print(ret[idx])
     #sort
     ret.sort()
     #uniq -c
@@ -39,8 +42,10 @@ def setUPTheLadder(ret):
         ret = ret[-5:]
     #grep -oP
     # is redutant
-        
-    
+
+    for ip in ret:
+        command = "whois "+ip+" | awk '/^Organization/ {print $2}'"
+        mShell.executeNoHup(command,True)
 
 
 # def shellTest():
