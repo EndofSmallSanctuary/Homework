@@ -1,3 +1,5 @@
+[localgroup]
+localhost
 
 [homegroup]
 #put your server ip addr here
@@ -6,9 +8,15 @@
 [homegroup:vars]
 git_repo=https://github.com/EndofSmallSanctuary/Homework.git
 project_path=/usr/flaskproject
-service_name=Pussy
+project_name=flask
+ansible_user=rogue
+ansible_sudo_pass=zxcking
+ansible_ssh_pass=zxcking
+
+[localgroup:vars]
+ansible_user=rogue
+ansible_sudo_pass=zxcking
 
 [all:vars]
-ansible_user=rogue
-ansible_ssh_pass=zxcking
-ansible_sudo_pass=zxcking
+ssh_key_filename=elvira_t
+ansible_ssh_private_key_file=~/.ssh/{{ssh_key_filename}}

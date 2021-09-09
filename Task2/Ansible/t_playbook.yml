@@ -3,7 +3,6 @@
   gather_facts: yes
 
   vars:
-    file_id: 1XFZTZ76lJcRgYGa1DjGLA8Wo6GtgcRYz
   tasks: 
 
   # - name: Set authorized key taken from file
@@ -53,30 +52,7 @@
   #     name: sshd
   #     state: restarted
 
-    - name: create directory with parent directories
-      file:
-       path: "{{project_path}}"
-       state: directory
 
-
-    - name: Download archive from google drive
-      get_url:
-        url: "https://drive.google.com/uc?export=download&id={{ file_id }}"
-        dest: "{{project_path}}/Flask.zip"
-        force: no
-        mode: u=r,g-r,o=r
-
-    
-    - name: Unarchive a file that is already on the remote machine
-      ansible.builtin.unarchive:
-        src: "{{project_path}}/Flask.zip"
-        dest: "{{project_path}}"
-        remote_src: yes
-
-    - name: remove trash
-      file:
-       path: "{{project_path}}/Flask.zip"
-       state: absent    
 
 
 

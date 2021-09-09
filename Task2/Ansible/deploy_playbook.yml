@@ -1,11 +1,8 @@
 ---  
-- hosts: localhost
-  become: yes
+- hosts: localgroup
+  become: no
   gather_facts: no
   connection: local
-  vars: 
-    ssh_key_filename: elvira_t
-    ssh_passphrase: ''
   tasks:
     - name: generate SSH key "{{ssh_key_filename}}" localy!!
       user:
@@ -14,14 +11,44 @@
         ssh_key_type: rsa
         ssh_key_bits: 4096
         ssh_key_file: .ssh/{{ssh_key_filename}}
-        ssh_key_passphrase: "{{ssh_passphrase}}"
         force: no
 
 
 - hosts: homegroup
   become: yes
   gather_facts: yes
+
+  vars:     
+    file_id: 1XFZTZ76lJcRgYGa1DjGLA8Wo6GtgcRYz
+    ssl_organization_name: flask
+    ssl_email: flask@mail.com
+    ssl_common_name: flask_common_name
+    lines_to_replace:
+    - { regexp: "^(.*)#HostbasedAuthentication(.*)$", line: "HostbasedAuthentication no" }
+    - { regexp: "^(.*)ChallengeResponceAuthentication(.*)$", line: "ChallengeResponceAuthentication no" }
+    - { regexp: "^(.*)PubkeyAuthentication(.*)$", line: "PubkeyAuthentication yes" }
+    - { regexp: "^(.*)PasswordAuthentication(.*)$", line: "PasswordAuthentication no" }
+    - { regexp: "^(.*)KerberosAuthentication(.*)$", line: "KerberosAuthentication no" }
+    - { regexp: "^(.*)GSSAPIAuthentication(.*)$", line: "GSSAPIAuthentication no" }
+    - { regexp: "^(.*)PermitRootLogin(.*)$", line: "PermitRootLogin no" }
+
+
+  handlers:
+
+  - name: service_installed 
+    systemd: 
+      name: "{{project_name}}"
+      daemon-reload: yes
+      enabled: yes
+
+  - name: sshd_changed
+    service:
+      name: sshd
+      state: restarted    
+
   tasks:
+
+#Essentials
 
   - name: install updates
     apt: 
@@ -37,6 +64,7 @@
         - python3-pip
         - python3-venv
         - ufw
+        - curl
       state: latest
       update_cache: yes
 
@@ -57,50 +85,61 @@
       executable: pip3  
       state: latest
 
+#Project folder deploy
+
+  - name: create directory with parent directories
+    file:
+      path: "{{project_path}}"
+      state: directory
 
 
-  # - name: Set authorized key taken from file
-  #   authorized_key:
-  #     user: "{{ansible_user}}"
-  #     state: present
-  #     manage_dir: yes
-  #     key: "{{lookup('file','.ssh/{{ssh_key_filename}}.pub')}}"
-  
-  # - name: generate service file from template 
-  #   template:
-  #     src: test_service.j2
-  #     dest: /etc/systemd/system/test.service  
+  - name: download project archive from google drive
+    get_url:
+      url: "https://drive.google.com/uc?export=download&id={{ file_id }}"
+      dest: "{{project_path}}/Flask.zip"
+      force: no
+      mode: u=r,g-r,o=r
 
-  # - name: prepare service 
-  #   systemd: 
-  #     name: test
-  #     daemon-reload: yes
-  #     enabled: yes
+    
+  - name: unarchive project remote
+    unarchive:
+      src: "{{project_path}}/Flask.zip"
+      dest: "{{project_path}}"
+      remote_src: yes
 
+  - name: remove zip, which is no longed needed 
+    file:
+      path: "{{project_path}}/Flask.zip"
+      state: absent
 
-  # - replace:
-  #     path: '/etc/ssh/sshd_config'
-  #     after: 'PasswordAuthentication'
-  #     regexp: '^(.*)PasswordAuthentication(.*)$'
-  #     replace: ''
+#Preparing service
 
-  # - name: Disable root SSH login
-  #   lineinfile:
-  #     dest: /etc/ssh/sshd_config
-  #     regexp: "^PermitRootLogin"
-  #     line: "PermitRootLogin no"
+  - name: generate service file from template 
+    template:
+      src: "{{project_name}}_service.j2"
+      dest: "/etc/systemd/system/{{project_name}}.service"
+    notify: service_installed    
 
-  # - lineinfile:
-  #     path: '/etc/ssh/sshd_config'
-  #     regexp: '^(.*)PasswordAuthentication(.*)$'
-  #     line: 'PasswordAuthentication no'      
+#Ssh section
 
-  # - name: restarting service
-  #   service:
-  #     name: sshd
-  #     state: restarted
+  - name: install key to remote  
+    become: no
+    authorized_key:
+      user: "{{ansible_user}}"
+      state: present
+      manage_dir: yes
+      key: "{{lookup('file','~/.ssh/{{ssh_key_filename}}.pub')}}"
 
 
+  - name: say bye to all auth methods (almost)
+    replace: 
+      path: /etc/ssh/sshd_config
+      regexp: "{{item.regexp}}"
+      replace: "{{item.line}}"  
+    with_items: "{{lines_to_replace}}"      
+    notify: sshd_changed
+
+#Achieving http://myvm.localhost pattern    
 
   - name: rewriting hosts
     lineinfile:
@@ -119,65 +158,58 @@
       state: present
 
 
+#SSL cert section
 
-  # - name: Generate an OpenSSL private key
-  #   openssl_privatekey:
-  #      path: "{{project_path}}/Task2/certificate/key.pem"
-  #      cipher: aes256
-  #      passphrase: ''
-  #      backup: yes
+  - name: generating ssl key
+    openssl_privatekey:
+       path: "{{project_path}}/certificate/key.pem"
+       cipher: aes256
+       passphrase: ''
+       backup: yes
 
-  # - name: Generate an OpenSSL Certificate Signing Request with Subject information
-  #   openssl_csr:
-  #       path: "{{project_path}}/Task2/certificate/csr.csr"
-  #       privatekey_path: "{{project_path}}/Task2/certificate/key.pem"
-  #       country_name: RU
-  #       organization_name: ruengine
-  #       email_address: rus@mail.com
-  #       common_name: fsd
+  - name: generating ssl csr
+    openssl_csr:
+        path: "{{project_path}}/certificate/csr.csr"
+        privatekey_path: "{{project_path}}/certificate/key.pem"
+        country_name: RU
+        organization_name: "{{ssl_organization_name}}"
+        email_address: "{{ssl_email}}"
+        common_name: "{{ssl_common_name}}"
 
-  # - name: Generate a Self Signed OpenSSL certificate
-  #   openssl_certificate:
-  #       path: "{{project_path}}/Task2/certificate/cert.pem"
-  #       privatekey_path: "{{project_path}}/Task2/certificate/key.pem"
-  #       csr_path: "{{project_path}}/Task2/certificate/csr.csr"
-  #       provider: selfsigned
-
-
-  # - name: removing csr
-  #   file:
-  #     path: "{{project_path}}/Task2/certificate/csr.csr"
-  #     state: absent   
-
-  # - name: limiting ports
-  #   ufw: 
-  #     policy: deny
-
-  # - name: opening ports
-  #   ufw:
-  #     rule: allow
-  #     name: OpenSSH
-
-  # - name: opening ports2
-  #   ufw:
-  #     rule: allow
-  #     name: WWW Full
+  - name: generating ssl cert
+    openssl_certificate:
+        path: "{{project_path}}/certificate/cert.pem"
+        privatekey_path: "{{project_path}}/certificate/key.pem"
+        csr_path: "{{project_path}}/certificate/csr.csr"
+        provider: selfsigned
 
 
-  # - name: enable ufw
-  #   ufw: 
-  #     state: enabled      
+  - name: removing csr
+    file:
+      path: "{{project_path}}/certificate/csr.csr"
+      state: absent   
 
- 
+#Firewall section
 
-  # - name: launch app
-  #   shell: cd "{{project_path}}/Task2" && sudo nohup python3 -u main.py > flasklog.log &
-  #   register: tmppython
+  - name: limiting ports
+    ufw: 
+      policy: deny
+      state: enabled 
 
-  # - name: Get stdout or stderr from the output
-  #   debug:
-  #     var: tmppython.stdout
+  - name: opening  port 22
+    ufw:
+      rule: allow
+      name: OpenSSH
 
+  - name: opening ports 80;443
+    ufw:
+      rule: allow
+      name: WWW Full  
+
+#launching app
+
+  - name: launch app
+    shell: cd "{{project_path}}" && sudo nohup python3 -u main.py > flasklog.log &
 
 
 

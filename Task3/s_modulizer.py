@@ -40,10 +40,12 @@ def setUPTheLadder(ret):
     #tail -n5
     if len(ret) >= 5:
         ret = ret[-5:]
+    print(ret)
     #grep -oP
     # is redutant
 
     for ip in ret:
+        print(ip)
         command = "whois "+ip+" | awk '/^Organization/ {print $2}'"
         mShell.executeNoHup(command,True)
 
