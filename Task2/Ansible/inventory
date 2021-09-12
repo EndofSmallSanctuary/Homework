@@ -10,12 +10,12 @@ git_repo=https://github.com/EndofSmallSanctuary/Homework.git
 project_path=/usr/flaskproject
 project_name=flask
 ansible_user=rogue
-ansible_sudo_pass=zxcking
-ansible_ssh_pass=zxcking
+ansible_sudo_pass={{homegroup76_passSUDO}}
+ansible_ssh_pass={{homegroup76_passSSH}}
 
 [localgroup:vars]
 ansible_user=rogue
-ansible_sudo_pass=zxcking
+ansible_sudo_pass={{localgroup76_passSUDO}}
 
 [all:vars]
 ssh_key_filename=elvira_t

@@ -1,5 +1,0 @@
-- name: enable_service
-  systemd: 
-    name: test
-    daemon-reload: yes
-    enabled: yes

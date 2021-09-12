@@ -45,9 +45,12 @@ def request80(path):
                 return("int count expected"+'\n')
             else:
                 returnstring = ''
+                animal_emoji= emoji.emojize(':'+animal+':')
+                if animal_emoji[0] == ':':
+                    animal_emoji = ''
                 for x in range(count):
-                    returnstring+=emoji.emojize(':'+animal+':') + animal + ' says ' + sound + '\n'
-                    print(emoji.emojize(':'+animal+':')+animal + ' says ' + sound);
+                    returnstring+=animal_emoji + animal + ' says ' + sound + '\n'
+                    print(animal_emoji+animal + ' says ' + sound);
                 returnstring+='Made with ' + emoji.emojize(':kissing_face:') + ' by '+ myname;
                 print('Made with ' + myname+'\n');    
                 return returnstring+'\n';    

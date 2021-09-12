@@ -50,12 +50,47 @@ class NetworkModule:
         #sort
         self.ipList.sort()
         #tail -n5
-        print(tlength)
-        print(self.ipList)
         if len(self.ipList) >= tlength:
             self.ipList = self.ipList[-tlength:]
-        print(self.ipList)
+        else: 
+            print("That's much. I shall keep all connections i've got then")
+
+        activeConnectionsNum = {}
+
+        print("Which parameter you'd like me to find with whois? [all/param name]")
+        try:
+            person_choise = str(input()).lower();
+        except:
+            KeyboardIterruptedHandler.onKeyBoardIterrupted()
+
+        if person_choise == "all":
+            for ip in self.ipList:
+                command = "whois " + ip
+                self.mShell.executeNoHup(command,True)
+        elif person_choise == "organization": 
+            onOrganizationExpected(self)
+        else:
+            for ip in self.ipList:
+                command = "whois "+ip+" | awk '/^"+person_choise+"/ {print $2}'"
+                self.mShell.executeNoHup(command,True)         
+
+
+        
+def onOrganizationExpected(self):
+
+        activeConnectionsNum = {}
 
         for ip in self.ipList:
             command = "whois "+ip+" | awk '/^Organization/ {print $2}'"
-            self.mShell.executeNoHup(command,True)
+            organization = self.mShell.execute(command)
+            if organization == '':
+                organization = 'No organization '
+            if organization in activeConnectionsNum:
+                activeConnectionsNum[organization[:-1]] +=1
+            else:
+                activeConnectionsNum[organization[:-1]] =1
+
+        
+        print("SUMMARY:")
+        for conn in activeConnectionsNum:
+            print(conn + " : " + str(activeConnectionsNum[conn]))

@@ -1,8 +1,10 @@
 ---  
 - hosts: localgroup
   become: no
+  vars_files: vault_76.yml 
   gather_facts: no
   connection: local
+
   tasks:
     - name: generate SSH key "{{ssh_key_filename}}" localy!!
       user:
@@ -16,6 +18,7 @@
 
 - hosts: homegroup
   become: yes
+  vars_files: vault_76.yml 
   gather_facts: yes
 
   vars:     
