@@ -78,6 +78,12 @@
       state: latest
       update_cache: yes
 
+   - name: pip self-update for cryptography
+      pip:
+        name: pip
+        state: latest
+      executable: pip3   
+
 
   - name: install pip packets
     pip:
