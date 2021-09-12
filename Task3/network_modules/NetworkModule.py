@@ -55,8 +55,6 @@ class NetworkModule:
         if len(self.ipList) >= tlength:
             self.ipList = self.ipList[-tlength:]
         print(self.ipList)
-        #grep -oP
-        # is redutant
 
         for ip in self.ipList:
             command = "whois "+ip+" | awk '/^Organization/ {print $2}'"
