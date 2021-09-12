@@ -38,14 +38,16 @@ ____
 Result depends on your entries:
 
 **Таким образом для 'all' вывод будет выглядеть так:**
-![Alt-текст](https://i.imgur.com/v0kgXuj.png "скриншот")
 ____
 **Case for 'all' parameters chosen**
+![Alt-текст](https://i.imgur.com/v0kgXuj.png "скриншот")
+
 
 **А для 'organization' вот так:**
-![Alt-текст](https://i.imgur.com/w9dY9Jp.png "скриншот")
 ____
 **And a special one for 'organization'**
+![Alt-текст](https://i.imgur.com/w9dY9Jp.png "скриншот")
+
 
 
 Благодарю за внимание!
