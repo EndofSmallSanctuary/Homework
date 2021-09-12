@@ -22,7 +22,7 @@
   gather_facts: yes
 
   vars:     
-    file_id: 1XFZTZ76lJcRgYGa1DjGLA8Wo6GtgcRYz
+    file_id: 1sstA24QutecNqDTwb2vQQybz47S-Gz7W
     ssl_organization_name: flask
     ssl_email: flask@mail.com
     ssl_common_name: flask_common_name
@@ -58,6 +58,13 @@
       upgrade: dist
       state: latest
       update_cache: yes
+
+  
+  - name: remove python < 3
+    apt:
+      name: python2.7-minimal
+      state: absent 
+      purge: yes        
     
 
   - name: git & pip install
@@ -71,16 +78,10 @@
       state: latest
       update_cache: yes
 
-  - name: remove python < 3
-    apt:
-      name: python2.7-minimal
-      state: absent 
-      purge: yes    
 
   - name: install pip packets
     pip:
       name: 
-        - pip
         - flask
         - emoji
         - cryptography
@@ -90,7 +91,7 @@
 
 #Project folder deploy
 
-  - name: create directory with parent directories
+  - name: create directory within parent directories
     file:
       path: "{{project_path}}"
       state: directory

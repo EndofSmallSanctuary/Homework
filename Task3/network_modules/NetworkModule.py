@@ -18,28 +18,9 @@ class NetworkModule:
             return ''
         self.mShell.executeNoHup(['clear']);
         return minput
-
-    def askIpLength(self):
-        print("How many lines of selected ip's you would like me to keep?")
-        print(self.ipList)
-        try:
-            minput = int(input())
-        except Exception as e:
-            print(e)
-            return 0
-
-        if(minput == 'show'):
-            print(self.ipList)
-            self.askIpLength()    
-        elif(type(minput) is not int):
-            print('Numeric value expected')
-            self.askIpLength()
-        else:
-            return minput
-
             
 
-    def executeIterations(self,tlength):
+    def executeIterations(self):
     #cut -d: -f1
         for idx,ip_port in enumerate(self.ipList):
             self.ipList[idx] = self.ipList[idx].split(':')[0]
@@ -50,6 +31,17 @@ class NetworkModule:
         #sort
         self.ipList.sort()
         #tail -n5
+
+        print("How many lines of selected ip's you would like me to cut at tail?")
+        print(self.ipList)
+        try:
+            tlength = int(input())
+        except Exception as e:
+            print(e)
+            tlength = 0
+
+
+        
         if len(self.ipList) >= tlength:
             self.ipList = self.ipList[-tlength:]
         else: 
@@ -82,13 +74,13 @@ def onOrganizationExpected(self):
 
         for ip in self.ipList:
             command = "whois "+ip+" | awk '/^Organization/ {print $2}'"
-            organization = self.mShell.execute(command)
-            if organization == '':
-                organization = 'No organization '
+            organization = self.mShell.execute(command)[:-1]
+            if len(organization) == 0:
+                organization = 'No organization'
             if organization in activeConnectionsNum:
-                activeConnectionsNum[organization[:-1]] +=1
+                activeConnectionsNum[organization] +=1
             else:
-                activeConnectionsNum[organization[:-1]] =1
+                activeConnectionsNum[organization] =1
 
         
         print("SUMMARY:")
