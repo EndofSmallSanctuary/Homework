@@ -3,7 +3,7 @@ localhost
 
 [homegroup]
 #put your server ip addr here
-192.168.1.122
+192.168.0.103
 
 [homegroup:vars]
 git_repo=https://github.com/EndofSmallSanctuary/Homework.git

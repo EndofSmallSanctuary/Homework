@@ -74,14 +74,15 @@
         - python3-pip
         - python3-venv
         - ufw
+        - unzip
         - curl
       state: latest
       update_cache: yes
 
-   - name: pip self-update for cryptography
-      pip:
-        name: pip
-        state: latest
+  - name: pip self-update for cryptography
+    pip:
+      name: pip
+      state: latest
       executable: pip3   
 
 
