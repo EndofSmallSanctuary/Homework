@@ -75,6 +75,7 @@
         - python3-venv
         - ufw
         - curl
+        - unzip
       state: latest
       update_cache: yes
 
