@@ -19,9 +19,6 @@ func init() {
 func main() {
 	// os.Setenv("TOKEN", "1963194779:AAENIjqo8Z-nuZJupalKglhvJEy8DIjQMPk")
 	//Создаем бота
-
-	obtainTaskList()
-
 	bot, err := tgbotapi.NewBotAPI(os.Getenv("TOKEN"))
 	if err != nil {
 		panic(err)
@@ -50,7 +47,7 @@ func main() {
 			bot.Send(message)
 			break
 		case "/Tasks":
-			obtainTaskList()
+			parseTasks()
 			break
 
 		}
