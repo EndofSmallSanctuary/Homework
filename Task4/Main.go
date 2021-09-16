@@ -31,6 +31,9 @@ func main() {
 
 	//Получаем обновления от бота
 	updates, err := bot.GetUpdatesChan(u)
+	if err != nil {
+		log.Panic(err)
+	}
 
 	for update := range updates {
 		if update.Message == nil {
@@ -45,10 +48,8 @@ func main() {
 			message.ReplyToMessageID = update.Message.MessageID
 
 			bot.Send(message)
-			break
 		case "/Tasks":
 			parseTasks()
-			break
 
 		}
 	}

@@ -52,4 +52,4 @@ ____
 
 Благодарю за внимание!
 ____
-Thank you for your attention!
+Thank for your attention!

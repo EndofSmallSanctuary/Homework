@@ -1,7 +1,6 @@
 package main
 
 import (
-	b64 "encoding/base64"
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
@@ -96,15 +95,8 @@ func parseTasks() {
 		}
 
 		if reqData["content"] != nil {
-			basedContent := reqData["content"].(string)
-
-			if basedContent != "" {
-				b64str, err := b64.StdEncoding.DecodeString(basedContent)
-				if err != nil {
-					log.Fatal(err)
-				}
-				fmt.Println(string(b64str))
-			}
+			decodeReadme(reqData["content"].(string))
+			//retrieveTaskStatus()
 		}
 	}
 }
