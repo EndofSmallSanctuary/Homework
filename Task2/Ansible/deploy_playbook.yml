@@ -76,6 +76,7 @@
         - ufw
         - unzip
         - curl
+        - unzip
       state: latest
       update_cache: yes
 
