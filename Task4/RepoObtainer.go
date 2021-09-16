@@ -38,27 +38,31 @@ func prepareRequestSignature(postfix string) string {
 	return apisignature + postfix
 }
 
+func prepareAuthorizedRequest(url string) []byte {
+	req, err := http.NewRequest("GET", url, nil)
+	if err != nil {
+		log.Panic(err)
+	}
+	req.Header.Add("Authorization", os.Getenv("TOKEN"))
+	resp, err := http.DefaultClient.Do(req)
+	if err != nil {
+		log.Panic(err)
+	}
+	defer resp.Body.Close()
+	body, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		log.Panic(err)
+	}
+	return body
+}
+
 func obtainTaskList() {
 
 	fmt.Println(prepareRequestSignature(""))
 
-	resp, err := http.Get(apisignature)
-	fmt.Println(os.Getenv("Repo") + "/contents/")
-
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	defer resp.Body.Close()
-
-	body, err := ioutil.ReadAll(resp.Body)
-
-	if err != nil {
-		log.Fatal(err)
-	}
-
+	body := prepareAuthorizedRequest(prepareRequestSignature(""))
 	sessionTasks = []repoContent{}
-	err = json.Unmarshal([]byte(body), &sessionTasks)
+	err := json.Unmarshal([]byte(body), &sessionTasks)
 	if err != nil {
 		fmt.Println(err)
 		return
@@ -75,21 +79,9 @@ func parseTasks() {
 		fmt.Println(sessionTasks[i].Taskname)
 
 		//Что это такое ??? Что он делает ахахахах
-		req, err := http.Get(prepareRequestSignature(sessionTasks[i].Taskname + "/README.md"))
-		if err != nil {
-			log.Fatal(err)
-		}
-
-		defer req.Body.Close()
-
-		body, err := ioutil.ReadAll(req.Body)
-
-		if err != nil {
-			log.Fatal(err)
-		}
-
+		body := prepareAuthorizedRequest(prepareRequestSignature(sessionTasks[i].Taskname + "/README.md"))
 		reqData := make(map[string]interface{})
-		err = json.Unmarshal([]byte(body), &reqData)
+		err := json.Unmarshal([]byte(body), &reqData)
 		if err != nil {
 			log.Fatal(err)
 		}
