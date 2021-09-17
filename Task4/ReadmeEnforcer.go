@@ -3,7 +3,11 @@ package main
 import (
 	b64 "encoding/base64"
 	"fmt"
+	"io/ioutil"
 	"log"
+	"net/http"
+	"net/url"
+	"strings"
 )
 
 var mastertail []byte
@@ -15,11 +19,10 @@ func decodeReadme(gitContent string) {
 			log.Fatal(err)
 		}
 
-		fmt.Println(b64str)
 		if len(b64str) > 5 {
 			mastertail = b64str[(len(b64str)-1)-5 : len(b64str)-1]
 		} else {
-			fmt.Println(len(mastertail))
+			mastertail = b64str
 		}
 	}
 }
@@ -35,6 +38,23 @@ func decodeReadme(gitContent string) {
 // 	return false
 // }
 
-// func checkTaskValidity(){
-// 	checkStr =
-// }
+func checkTaskValidity(gitContent string) {
+	decodeReadme(gitContent)
+	data := url.Values{}
+	data.Set("masterkey", string(mastertail))
+	req, err := http.NewRequest("POST", "http://localhost:8080/testKey", strings.NewReader(data.Encode()))
+	if err != nil {
+		log.Panic(err)
+	}
+	req.Header.Add("Content-Type", "application/x-www-form-urlencoded")
+	resp, err := http.DefaultClient.Do(req)
+	if err != nil {
+		log.Panic(err)
+	}
+	defer resp.Body.Close()
+	body, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		log.Panic(err)
+	}
+	fmt.Println(body)
+}

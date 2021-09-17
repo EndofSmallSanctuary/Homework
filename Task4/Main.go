@@ -43,14 +43,18 @@ func main() {
 		switch update.Message.Text {
 		case "/Git":
 			msg := prepareRepoLink()
-			print(msg)
-			message := tgbotapi.NewMessage(update.Message.Chat.ID, msg)
-			message.ReplyToMessageID = update.Message.MessageID
-
-			bot.Send(message)
+			bot.Send(setMsgOverlay(msg, update))
 		case "/Tasks":
+			bot.Send(setMsgOverlay("Sending task status request to Raven", update))
 			parseTasks()
+			//checkTaskValidity("dogs")
 
 		}
 	}
+}
+
+func setMsgOverlay(content string, update tgbotapi.Update) tgbotapi.Chattable {
+	message := tgbotapi.NewMessage(update.Message.Chat.ID, content)
+	message.ReplyToMessageID = update.Message.MessageID
+	return message
 }

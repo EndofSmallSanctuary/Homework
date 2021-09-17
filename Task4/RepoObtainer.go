@@ -87,7 +87,8 @@ func parseTasks() {
 		}
 
 		if reqData["content"] != nil {
-			decodeReadme(reqData["content"].(string))
+			checkTaskValidity(reqData["content"].(string))
+			// decodeReadme(reqData["content"].(string))
 			//retrieveTaskStatus()
 		}
 	}
