@@ -17,6 +17,7 @@ type repoContent struct {
 	Taskname string `json:"path"`
 	DeepLink string `json:"html_url"`
 	Type     string `json:"type"`
+	Status   string
 }
 
 func prepareRepoLink() string {
@@ -34,7 +35,6 @@ func prepareRequestSignature(postfix string) string {
 			apisignature = "https://api.github.com/repos" + repotail[1] + "/contents/"
 		}
 	}
-	fmt.Println(apisignature + postfix)
 	return apisignature + postfix
 }
 
@@ -58,8 +58,6 @@ func prepareAuthorizedRequest(url string) []byte {
 
 func obtainTaskList() {
 
-	fmt.Println(prepareRequestSignature(""))
-
 	body := prepareAuthorizedRequest(prepareRequestSignature(""))
 	sessionTasks = []repoContent{}
 	err := json.Unmarshal([]byte(body), &sessionTasks)
@@ -70,13 +68,11 @@ func obtainTaskList() {
 
 }
 
-func parseTasks() {
+func parseTasks() []repoContent {
 
 	obtainTaskList()
 
 	for i := 1; i < len(sessionTasks); i++ {
-
-		fmt.Println(sessionTasks[i].Taskname)
 
 		//Что это такое ??? Что он делает ахахахах
 		body := prepareAuthorizedRequest(prepareRequestSignature(sessionTasks[i].Taskname + "/README.md"))
@@ -87,9 +83,28 @@ func parseTasks() {
 		}
 
 		if reqData["content"] != nil {
-			checkTaskValidity(reqData["content"].(string))
-			// decodeReadme(reqData["content"].(string))
-			//retrieveTaskStatus()
+			sessionTasks[i].Status = checkTaskValidity(reqData["content"].(string))
+		} else {
+			sessionTasks[i].Status = "Status not presented"
 		}
 	}
+
+	return sessionTasks
+}
+
+func retrieveDeepLink(taskname string) string {
+	//Cheking Cache
+
+	if sessionTasks == nil || len(sessionTasks) == 0 {
+		obtainTaskList()
+	}
+
+	for _, task := range sessionTasks {
+		if task.Taskname == taskname {
+			return task.DeepLink
+		}
+	}
+
+	return ("Requred Task not present in my repository")
+
 }
