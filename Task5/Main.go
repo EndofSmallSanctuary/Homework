@@ -1,7 +1,6 @@
 package main
 
-import "fmt"
-
 func main() {
-	fmt.Println("Test")
+	targetRepo = "https://github.com/EndofSmallSanctuary/Homework"
+	prepareRequest()
 }
