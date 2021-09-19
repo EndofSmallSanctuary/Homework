@@ -85,7 +85,7 @@ func parseTasks() []repoContent {
 		if reqData["content"] != nil {
 			sessionTasks[i].Status = checkTaskValidity(reqData["content"].(string))
 		} else {
-			sessionTasks[i].Status = "Status not presented"
+			sessionTasks[i].Status = "Readme not presented"
 		}
 	}
 
@@ -105,6 +105,6 @@ func retrieveDeepLink(taskname string) string {
 		}
 	}
 
-	return ("Requred Task not present in my repository")
+	return ("Requred Task not presented in my repository")
 
 }
