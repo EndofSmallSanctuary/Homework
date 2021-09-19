@@ -3,6 +3,7 @@ package main
 import (
 	"log"
 	"os"
+	"regexp"
 
 	tgbotapi "github.com/Syfaro/telegram-bot-api"
 	"github.com/joho/godotenv"
@@ -17,8 +18,9 @@ func init() {
 }
 
 func main() {
-	// os.Setenv("TOKEN", "1963194779:AAENIjqo8Z-nuZJupalKglhvJEy8DIjQMPk")
-	//Создаем бота
+
+	tasksCase := regexp.MustCompile("/" + "Task[0-9]")
+
 	bot, err := tgbotapi.NewBotAPI(os.Getenv("TOKEN"))
 	if err != nil {
 		panic(err)
@@ -46,10 +48,25 @@ func main() {
 			bot.Send(setMsgOverlay(msg, update))
 		case "/Tasks":
 			bot.Send(setMsgOverlay("Sending task status request to Raven", update))
-			parseTasks()
-			//checkTaskValidity("dogs")
+			tasksStatus := parseTasks()
+			statusMSG := ""
+			for i := 1; i < len(tasksStatus); i++ {
+				statusMSG += tasksStatus[i].Taskname + " : " + tasksStatus[i].Status + "\n"
+			}
+			if statusMSG == "" {
+				bot.Send(setMsgOverlay("nothing to show", update))
+			} else {
+				bot.Send(setMsgOverlay(statusMSG, update))
+			}
 
+		case "/UpdateCache":
+			obtainTaskList()
 		}
+
+		if tasksCase.MatchString(update.Message.Text) {
+			bot.Send(setMsgOverlay(retrieveDeepLink(update.Message.Text[1:]), update))
+		}
+
 	}
 }
 
