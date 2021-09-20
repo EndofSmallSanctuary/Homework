@@ -72,6 +72,8 @@ Playbook execution essencials:
 
 You are able to change ssl parameters. To do this you should change ssl contained variables inside deploy_playbook.yml itself
 
+![Alt-текст](https://i.imgur.com/JnoOXEy.png "скриншот")
+
 
 ### Запуск
 После того как все необходимые действия выполнены, осуществите запуск плейбука командой ansible-playbook deploy_playbook.yml --vault-password-file .vault_password
