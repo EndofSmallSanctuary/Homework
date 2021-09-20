@@ -67,10 +67,9 @@
       purge: yes        
     
 
-  - name: git & pip install
+  - name: soft install
     apt:
       name: 
-        - git
         - python3-pip
         - python3-venv
         - ufw
