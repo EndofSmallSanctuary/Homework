@@ -32,13 +32,13 @@ The app, i've created listening both 80 and 443 ports to accept requests. SSL ce
 
 The function of accepting post requests was implemented. Default post req addr template looks like : *vmname.localhost*. If your requested animal has it's presentation as emoji, you will see related one. **only if your terminal is familliar with emoji**
 
-![Alt-текст](https://imgur.com/a/ymQv1a7 "скриншот")
+![Alt-текст](https://i.imgur.com/S0eMULu.png "скриншот")
 
 Get секция. Что я ожидаю увидеть посещая случайную страницу?
 
 Get section. What i expect when visiting any randrom page in the internet
 
-![Alt-текст](https://imgur.com/a/vZXL5Eh "скриншот")
+![Alt-текст](https://i.imgur.com/TITw5Bz.png "скриншот")
 
 
 ## Часть 2. Ansible 
