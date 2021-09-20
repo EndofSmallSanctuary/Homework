@@ -1,7 +1,13 @@
 package main
 
 import (
+	"bytes"
+	"encoding/json"
 	"fmt"
+	"io/ioutil"
+	"log"
+	"net/http"
+	"os"
 	"sort"
 )
 
@@ -23,9 +29,9 @@ type GitLabels struct {
 }
 
 type OutputNode struct {
-	User     GitUsers
-	Lables   []GitLabels
-	TotalPrs int32
+	User     GitUsers    `json:"user"`
+	Lables   []GitLabels `json:"labels"`
+	TotalPrs int32       `json:"totalprs"`
 }
 
 var sessionPulls = []Gitpulls{}
@@ -51,8 +57,36 @@ func showWhatsHiding() {
 		}
 	}
 
-	for _, pull := range outputNodes {
-		fmt.Println(pull)
+	fmt.Println(len(outputNodes))
+
+	testRequest(outputNodes)
+
+}
+
+func testRequest(pull []OutputNode) string {
+
+	payload, err := json.Marshal(outputNodes)
+	if err != nil {
+		log.Panic(err)
 	}
 
+	fmt.Println(string(payload))
+
+	req, err := http.NewRequest("POST", os.Getenv("Raven"), bytes.NewBuffer(payload))
+	if err != nil {
+		log.Fatal(err)
+	}
+	req.Header.Add("Content-Type", "application/json")
+	resp, err := http.DefaultClient.Do(req)
+	if err != nil {
+		return "Cannot establish connection with Raven server"
+	}
+	defer resp.Body.Close()
+	body, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		log.Panic(err)
+	}
+
+	result := string(body)
+	return result
 }
