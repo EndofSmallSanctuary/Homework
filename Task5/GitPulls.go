@@ -13,19 +13,19 @@ import (
 )
 
 type Gitpulls struct {
-	Url     int32       `json:"id"`
+	Url     int64       `json:"id"`
 	GitUser GitUsers    `json:"user"`
 	Labels  []GitLabels `json:"labels"`
 }
 
 type GitUsers struct {
-	Id     int32  `json:"id"`
+	Id     int64  `json:"id"`
 	Login  string `json:"login"`
 	Avatar string `json:"avatar_url"`
 }
 
 type GitLabels struct {
-	Id          int32  `json:"id"`
+	Id          int64  `json:"id"`
 	Name        string `json:"name"`
 	Description string `json:"description"`
 }
@@ -67,6 +67,7 @@ func showWhatsHiding() {
 		createUserHTML(node.User.Login, testRequest(node))
 	}
 
+	fmt.Println("")
 	fmt.Println("I have a strong feeling, that you should check out your Christmas Tree :)")
 
 }
