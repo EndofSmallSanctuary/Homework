@@ -23,6 +23,7 @@ My bot is ready to accomplish 3 commands, which were required by task, but also:
     -   It works with remote spring service
     -   It is online 24/7, thanks to aws ec2. Therefore, you may contact my bot whenever you want, and no installiations or executions or packages or vms or ... are required.
 
+Contact it right now: @GOingUnder_bot
 
 ## Raven 
 
@@ -38,4 +39,4 @@ Source code locates right in the next repository: https://github.com/EndofSmallS
 
 Спасибо за уделенное время!
 ____
-Thanks for the attention!
+Thank for your attention!
