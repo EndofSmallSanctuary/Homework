@@ -1,21 +1,17 @@
-FROM alpine:3.14 as base
-FROM base as builder
+FROM python:3.6-slim AS complier
+WORKDIR /app
+COPY Flask /app
 
+RUN apt-get update \
+    && apt-get install -y build-essential patchelf \
+    && pip install --upgrade pip \
+    && pip install -r requirements.txt \
+    && pip install staticx pyinstaller \ 
+    && pyinstaller -F main.py \
+    && staticx /app/dist/main  /test2
 
-RUN mkdir /install
-WORKDIR /install
-
-
-
-COPY /requirements.txt /requirements.txt
-RUN apk add --update --no-cache python3 && ln -sf python3 /usr/bin/python  && python3 -m ensurepip && python3 -m pip install --upgrade pip  &&  pip3 install -r /requirements.txt
-
-FROM base
-
-
-COPY --from=builder /install /usr/local
-RUN apk add --update --no-cache python3
-COPY . /Flask
-WORKDIR /Flask
-ENTRYPOINT [ "python3"]
-CMD ["main.py"]
+from scratch
+COPY --from=complier test2 test2
+COPY --from=complier tmp /tmp
+# COPY /build .
+CMD ["/test2"]
