@@ -1,19 +1,22 @@
 import emoji
+import os, sys
 import urllib.request, json 
 from flask import Flask
-from threading import Thread
 from flask.globals import request
 from flask.templating import render_template
-app = Flask(__name__)
+app = Flask(__name__,
+template_folder='/templates',
+static_folder='/static')
+
 myname = "%your name";
 
 
 def initiateapp8080():
-    app.run(debug=True,threaded=True,host="0.0.0.0",port=8080,use_reloader=False)
+    app.run(debug=True,host="0.0.0.0",port=8080)
 
 #Fetching emoju from openAPI
 def fetchemoji():
-    with urllib.request.urlopen("https://ranmoji.herokuapp.com/emojis/api/v.1.0/") as url:
+    with urllib.request.urlopen("http://ranmoji.herokuapp.com/emojis/api/v.1.0/") as url:
         data = json.loads(url.read().decode())
         if data is not None:
             return data['emoji'].split(';',1)[0];
@@ -49,7 +52,7 @@ def request80(path):
                     animal_emoji = ''
                 for x in range(count):
                     returnstring+=animal_emoji + animal + ' says ' + sound + '\n'
-                    print(animal_emoji+animal + ' says ' + sound);
+                    print(returnstring.encode('ascii','ignore'));
                 returnstring+='Made with ' + emoji.emojize(':kissing_face:') + ' by '+ myname;
                 print('Made with ' + myname+'\n');    
                 return returnstring+'\n';    
@@ -63,7 +66,5 @@ def request80(path):
         else:
             return render_template("home.html",value="Home Page",emoji=randomEmoji[1:])
 
-
 if __name__=="__main__":
-   thread1 = Thread(target=initiateapp8080)
-   thread1.start()
+    initiateapp8080()
