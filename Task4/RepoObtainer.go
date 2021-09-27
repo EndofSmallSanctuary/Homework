@@ -101,7 +101,11 @@ func retrieveDeepLink(taskname string) string {
 
 	for _, task := range sessionTasks {
 		if task.Taskname == taskname {
-			return task.DeepLink
+			if task.Status == "Done" {
+				return task.DeepLink
+			} else {
+				return "Ya ewe ne sdelal etot task pojaluista viberite DONE :)"
+			}
 		}
 	}
 
