@@ -19,4 +19,4 @@ I hope, that final image size, which functionality is all-round preserved, will 
 
 Спасибо за уделенное время!
 ____
-Thank for your attention!
+Thanks for your attention!
