@@ -10,8 +10,8 @@ terraform {
 # Configure the AWS Provider
 provider "aws" {
   region = "us-west-2"
-  access_key = "AKIAZXX7XTCCXGIOZDUK"
-  secret_key = "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"
+  access_key = "AKIAZXX7XTCC6U3SZR7N"
+  secret_key = "Nh/DnldVqIad+WCfOL55LJSp+QQIrovyQjlbhrI"
 }
 
 # Create a VPC
@@ -24,6 +24,7 @@ resource "aws_vpc" "vpc" {
 resource "aws_internet_gateway" "gw"{
   vpc_id = aws_vpc.vpc.id
 }
+
 
 resource "aws_route_table" "rtable"{
   vpc_id = aws_vpc.vpc.id
@@ -41,13 +42,24 @@ resource "aws_subnet" "subnet1"{
   availability_zone = "us-west-2a"
 }
 
+resource "aws_subnet" "subnet2"{
+  vpc_id = aws_vpc.vpc.id
+  cidr_block = "10.0.2.0/24"
+  availability_zone = "us-west-2b"
+}
+
 resource "aws_route_table_association" "a"{
   subnet_id  = aws_subnet.subnet1.id
   route_table_id = aws_route_table.rtable.id
 }
 
+resource "aws_route_table_association" "b"{
+  subnet_id  = aws_subnet.subnet2.id
+  route_table_id = aws_route_table.rtable.id
+}
+
 resource "aws_security_group" "sg"{
-  name = "group1 "
+  name = "sshhttpgroup"
   vpc_id  = aws_vpc.vpc.id
 
   ingress{
@@ -78,13 +90,13 @@ resource  "aws_network_interface" "inteface"{
   security_groups = [aws_security_group.sg.id]
 }
 
-resource "aws_eip" "one"{
-  vpc = true
-  depends_on = [aws_internet_gateway.gw]
-  network_interface = aws_network_interface.inteface.id
-  associate_with_private_ip = "10.0.1.50"
-
+resource  "aws_network_interface" "inteface2"{
+  subnet_id = aws_subnet.subnet2.id
+  private_ips = ["10.0.2.50"]
+  security_groups = [aws_security_group.sg.id]
 }
+
+
 
 
 
@@ -103,8 +115,8 @@ resource "aws_eip" "one"{
 #   }
 # }
 
-resource "aws_iam_role" "CF2TF-IAM-Role" {
-  name = "CF2TF-IAM-Role"
+resource "aws_iam_role" "s3bucketrole" {
+  name = "s3Role"
   assume_role_policy = <<EOF
 {
   "Version": "2012-10-17",
@@ -121,8 +133,8 @@ resource "aws_iam_role" "CF2TF-IAM-Role" {
 EOF
 }
 
-resource "aws_iam_policy" "CF2TF-IAM-Policy" {
-  name = "CF2TF-IAM-Policy"
+resource "aws_iam_policy" "s3bucketpolicy" {
+  name = "s3Policy"
   policy = <<EOF
 {
   "Version": "2012-10-17",
@@ -137,28 +149,28 @@ resource "aws_iam_policy" "CF2TF-IAM-Policy" {
 EOF
 }
 
-resource "aws_iam_role_policy_attachment" "CF2TF-IAM-PA" {
-  depends_on = ["aws_iam_role.CF2TF-IAM-Role", "aws_iam_policy.CF2TF-IAM-Policy"]
-  role = "${aws_iam_role.CF2TF-IAM-Role.name}"
-  policy_arn = "${aws_iam_policy.CF2TF-IAM-Policy.arn}"
+resource "aws_iam_role_policy_attachment" "policyattachment" {
+  depends_on = [aws_iam_role.s3bucketrole, aws_iam_policy.s3bucketpolicy]
+  role = aws_iam_role.s3bucketrole.name
+  policy_arn = aws_iam_policy.s3bucketpolicy.arn
 }
 
-resource "aws_iam_instance_profile" "CF2TF" {
-  name = "CF2TF-IAM-IP"
-  depends_on = ["aws_iam_role.CF2TF-IAM-Role"]
-  role = "${aws_iam_role.CF2TF-IAM-Role.id}"
+resource "aws_iam_instance_profile" "s3profile" {
+  name = "s3profile"
+  depends_on = [aws_iam_role.s3bucketrole]
+  role = aws_iam_role.s3bucketrole.id
 }
 
 
 
-resource "aws_instance" "testec2"{
+resource "aws_instance" "nginx1"{
   ami = "ami-0c2d06d50ce30b442"
   instance_type = "t2.micro"
   key_name = "Mermaid"
-  # subnet_id = aws_subnet.subnet1.id
-  # security_groups = [aws_security_group.sg.id]
+ // subnet_id = aws_subnet.subnet1.id
+  # vpc_security_grous_ids = [aws_security_group.sg.id]
   # associate_public_ip_address = true
-  iam_instance_profile = aws_iam_instance_profile.CF2TF.id
+  iam_instance_profile = aws_iam_instance_profile.s3profile.id
 
   network_interface {
     network_interface_id = aws_network_interface.inteface.id
@@ -166,7 +178,7 @@ resource "aws_instance" "testec2"{
   }
 
   tags = {
-    Name = "Sasha"
+    Name = "Nginx1"
   }
 
   user_data = <<EOF
@@ -177,7 +189,83 @@ resource "aws_instance" "testec2"{
               sudo service nginx start     
               sudo systemctl start nginx
               sudo systemctl enable nginx
-              sudo aws s3 cp s3://indexbuckettask7/index.html /usr/share/nginx/html/index.html 
+              sudo aws s3 cp s3://${var.bucketname}/index.html /usr/share/nginx/html/index.html 
               EOF
   
+}
+
+
+
+resource "aws_eip" "one"{
+  vpc = true
+  depends_on = [aws_instance.nginx1]
+  network_interface = aws_network_interface.inteface.id
+  associate_with_private_ip = "10.0.1.50"
+
+}
+
+resource "aws_instance" "nginx2"{
+  ami = "ami-0c2d06d50ce30b442"
+  instance_type = "t2.micro"
+  key_name = "Mermaid"
+ // subnet_id = aws_subnet.subnet2.id
+  # vpc_security_grous_ids = [aws_security_group.sg.id]
+  # associate_public_ip_address = true
+  iam_instance_profile = aws_iam_instance_profile.s3profile.id
+
+  network_interface {
+    network_interface_id = aws_network_interface.inteface2.id
+    device_index = 0
+  }
+
+  tags = {
+    Name = "Nginx2"
+  }
+
+  user_data = <<EOF
+              #!/bin/bash
+              sudo yum -y update
+              sudo yum -y install nginx      
+              sudo amazon-linux-extras install -y nginx1
+              sudo service nginx start     
+              sudo systemctl start nginx
+              sudo systemctl enable nginx
+              sudo aws s3 cp s3://${var.bucketname}/index.html /usr/share/nginx/html/index.html 
+              EOF
+  
+}
+
+resource "aws_eip" "two"{
+  vpc = true
+  depends_on = [aws_instance.nginx2]
+  network_interface = aws_network_interface.inteface2.id
+  associate_with_private_ip = "10.0.2.50"
+
+}
+
+resource "aws_elb" "balancer"{
+  name = "balancer"
+  subnets = [aws_subnet.subnet1.id,aws_subnet.subnet2.id]
+  security_groups = [aws_security_group.sg.id]
+
+  listener {
+    instance_port = 80
+    instance_protocol = "http"
+    lb_port = 80
+    lb_protocol = "http"
+  }
+
+  health_check {
+    healthy_threshold   = 2
+    unhealthy_threshold = 2
+    timeout             = 3
+    target              = "HTTP:80/"
+    interval            = 30
+  }
+
+  instances = [aws_instance.nginx1.id,aws_instance.nginx2.id]
+  cross_zone_load_balancing = true
+  idle_timeout = 600
+  connection_draining = true
+  connection_draining_timeout = 600
 }

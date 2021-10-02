@@ -327,11 +327,22 @@ Resources:
       KeyName: !Ref KeyName
       SecurityGroupIds:
         - !Ref SecurityGroup
+      UserData:
+        Fn::Base64: !Sub |
+          #!/bin/bash
+          sudo yum -y update
+          sudo yum -y install nginx      
+          sudo service nginx start     
+          sudo systemctl start nginx
+          sudo systemctl enable nginx
+          sudo aws s3 cp s3://indexbuckettask7/index.html /usr/share/nginx/html/index.html   
 
   
 
   LoadBalancer:
     Type: AWS::ElasticLoadBalancing::LoadBalancer
+    SecurityGroups:
+      - !Ref SecurityGroup
     Properties:
       Subnets:
         - Ref: Subnet1Id
