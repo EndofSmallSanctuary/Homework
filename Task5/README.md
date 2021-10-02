@@ -24,4 +24,4 @@ On successfull responce, when at least one real contributor presents, you will b
 
 Спасибо за уделенное время!
 ____
-Thank for your attention!
+Thansk for your attention!
