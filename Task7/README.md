@@ -22,4 +22,4 @@ To execute this script, please, use propriate aws cloudformation from aws consol
 
 Спасибо за уделенное время!
 ____
-Thank for your attention!
+Thanks for your attention!
