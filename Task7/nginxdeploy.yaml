@@ -4,6 +4,11 @@ Parameters:
   KeyName:
     Type: AWS::EC2::KeyPair::KeyName
 
+  BucketName:
+    Type: String 
+    Default: bucketname
+    
+
   InstanceType:
     Type: String
     Default: t2.micro
@@ -316,7 +321,7 @@ Resources:
             sudo service nginx start     
             sudo systemctl start nginx
             sudo systemctl enable nginx
-            sudo aws s3 cp s3://indexbuckettask7/index.html /usr/share/nginx/html/index.html
+            sudo aws s3 cp s3://${BucketName}/index.html /usr/share/nginx/html/index.html
 
   SubEC2: 
     Type: AWS::EC2::Instance      
@@ -335,14 +340,12 @@ Resources:
           sudo service nginx start     
           sudo systemctl start nginx
           sudo systemctl enable nginx
-          sudo aws s3 cp s3://indexbuckettask7/index.html /usr/share/nginx/html/index.html   
+          sudo aws s3 cp s3://${BucketName}/index.html /usr/share/nginx/html/index.html   
 
   
 
   LoadBalancer:
     Type: AWS::ElasticLoadBalancing::LoadBalancer
-    SecurityGroups:
-      - !Ref SecurityGroup
     Properties:
       Subnets:
         - Ref: Subnet1Id
@@ -350,6 +353,8 @@ Resources:
       Instances:
         - Ref: NginxEC2
         - Ref: SubEC2
+      SecurityGroups:
+      - !Ref SecurityGroup  
       Listeners:
         - LoadBalancerPort: '80'
           InstancePort: '80'

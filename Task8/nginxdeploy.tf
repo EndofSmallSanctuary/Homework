@@ -9,9 +9,9 @@ terraform {
 
 # Configure the AWS Provider
 provider "aws" {
-  region = "us-west-2"
-  access_key = "AKIAZXX7XTCC6U3SZR7N"
-  secret_key = "Nh/DnldVqIad+WCfOL55LJSp+QQIrovyQjlbhrI"
+  region = var.region
+  access_key = var.access_key
+  secret_key = var.secret_key
 }
 
 # Create a VPC
@@ -163,109 +163,4 @@ resource "aws_iam_instance_profile" "s3profile" {
 
 
 
-resource "aws_instance" "nginx1"{
-  ami = "ami-0c2d06d50ce30b442"
-  instance_type = "t2.micro"
-  key_name = "Mermaid"
- // subnet_id = aws_subnet.subnet1.id
-  # vpc_security_grous_ids = [aws_security_group.sg.id]
-  # associate_public_ip_address = true
-  iam_instance_profile = aws_iam_instance_profile.s3profile.id
 
-  network_interface {
-    network_interface_id = aws_network_interface.inteface.id
-    device_index = 0
-  }
-
-  tags = {
-    Name = "Nginx1"
-  }
-
-  user_data = <<EOF
-              #!/bin/bash
-              sudo yum -y update
-              sudo yum -y install nginx      
-              sudo amazon-linux-extras install -y nginx1
-              sudo service nginx start     
-              sudo systemctl start nginx
-              sudo systemctl enable nginx
-              sudo aws s3 cp s3://${var.bucketname}/index.html /usr/share/nginx/html/index.html 
-              EOF
-  
-}
-
-
-
-resource "aws_eip" "one"{
-  vpc = true
-  depends_on = [aws_instance.nginx1]
-  network_interface = aws_network_interface.inteface.id
-  associate_with_private_ip = "10.0.1.50"
-
-}
-
-resource "aws_instance" "nginx2"{
-  ami = "ami-0c2d06d50ce30b442"
-  instance_type = "t2.micro"
-  key_name = "Mermaid"
- // subnet_id = aws_subnet.subnet2.id
-  # vpc_security_grous_ids = [aws_security_group.sg.id]
-  # associate_public_ip_address = true
-  iam_instance_profile = aws_iam_instance_profile.s3profile.id
-
-  network_interface {
-    network_interface_id = aws_network_interface.inteface2.id
-    device_index = 0
-  }
-
-  tags = {
-    Name = "Nginx2"
-  }
-
-  user_data = <<EOF
-              #!/bin/bash
-              sudo yum -y update
-              sudo yum -y install nginx      
-              sudo amazon-linux-extras install -y nginx1
-              sudo service nginx start     
-              sudo systemctl start nginx
-              sudo systemctl enable nginx
-              sudo aws s3 cp s3://${var.bucketname}/index.html /usr/share/nginx/html/index.html 
-              EOF
-  
-}
-
-resource "aws_eip" "two"{
-  vpc = true
-  depends_on = [aws_instance.nginx2]
-  network_interface = aws_network_interface.inteface2.id
-  associate_with_private_ip = "10.0.2.50"
-
-}
-
-resource "aws_elb" "balancer"{
-  name = "balancer"
-  subnets = [aws_subnet.subnet1.id,aws_subnet.subnet2.id]
-  security_groups = [aws_security_group.sg.id]
-
-  listener {
-    instance_port = 80
-    instance_protocol = "http"
-    lb_port = 80
-    lb_protocol = "http"
-  }
-
-  health_check {
-    healthy_threshold   = 2
-    unhealthy_threshold = 2
-    timeout             = 3
-    target              = "HTTP:80/"
-    interval            = 30
-  }
-
-  instances = [aws_instance.nginx1.id,aws_instance.nginx2.id]
-  cross_zone_load_balancing = true
-  idle_timeout = 600
-  connection_draining = true
-  connection_draining_timeout = 600
-}
