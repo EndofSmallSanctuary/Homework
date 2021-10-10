@@ -4,7 +4,7 @@ ____
 Здравствуйте, уважаемые преподаватели. С вашего позволения, представляю НЕзавершенный проект шестого домашнего задания
 ____
 Hello, dear teachers
-With your permission, i'd like to introduce my NOT-fully-completed Task6 project
+With your permission, i'd like to introduce my NOT-fully-completed Task7 project
 
 
 ## Concern
